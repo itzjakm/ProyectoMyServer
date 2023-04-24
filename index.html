@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+      const socket = io('/manager');
+      socket.on('connect', () => {
+        socket.emit('manager');
+      });
+      socket.on('UsersArr', data => {
+        const u = data
+          .map(
+            user => `<li>
+          <button data-user="${user.id}">${user.str}</button>
+          </li>`
+          )
+          .join('');
+        console.log(data);
+        const usersEl = document.querySelector('.users');
+        usersEl.innerHTML = u;
+        usersEl.addEventListener('click', e => {
+          if (e.target.tagName === 'BUTTON') {
+            const id = e.target.dataset.user;
+            socket.emit('dingM', id);
+          }
+        });
+      });
+    </script>
+    <style></style>
+  </head>
+  <body>
+    <ul class="users"></ul>
+    <button class="hideModal">Hide on all Devices</button>
+    <button class="showModal">Show on all Devices</button>
+    <script>
+      document.querySelector('.hideModal').addEventListener('click', () => {
+        socket.emit('hideModalM');
+      });
+      document.querySelector('.showModal').addEventListener('click', () => {
+        socket.emit('showModalM');
+      });
+    </script>
+  </body>
+</html>
